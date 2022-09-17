@@ -40,13 +40,13 @@ describe('ProductService', () => {
     expect(service).toBeDefined();
   });
 
-  it('findAll deberia retornar todos los productos', async () => {
+  it('findAll should return all products', async () => {
     const products: ProductEntity[] = await service.findAll();
     expect(products).not.toBeNull();
     expect(products).toHaveLength(lsProduct.length);
   });
 
-  it('findOne deberia retornar un product', async () => {
+  it('findOne should return a product', async () => {
     const productStored: ProductEntity = lsProduct[0];
     const product: ProductEntity = await service.findOne(productStored.id);
     expect(product).not.toBeNull();
@@ -56,10 +56,45 @@ describe('ProductService', () => {
     expect(product.product_type).toEqual(productStored.product_type);
   });
 
-  it('findOne deberia arrojar una excepcion por un producto invalido', async () => {
+  it('findOne throw an exception for invalid product', async () => {
     await expect(
         service.findOne("0")
-    ).rejects.toHaveProperty("message", "El producto con el ID dado no fue encontrado")
+    ).rejects.toHaveProperty("message", "The product with the given id was not found")
+  });
+
+  it('create should create a new product', async () => {
+    const product: ProductEntity = {
+        id: "",
+        name: faker.lorem.sentence(),
+        price: faker.datatype.number({ min: 10, max: 100, precision: 0.01}),
+        product_type: faker.helpers.arrayElement(['Perecedero', 'No perecedero'])
+    };
+
+    const newProduct: ProductEntity = await service.create(product);
+    expect(newProduct).not.toBeNull();
+
+    const productStored: ProductEntity = await service.findOne(newProduct.id);
+    expect(productStored).not.toBeNull();
+
+    expect(productStored.id).toEqual(newProduct.id);
+    expect(productStored.name).toEqual(newProduct.name);
+    expect(productStored.price).toEqual(newProduct.price);
+    expect(productStored.product_type).toEqual(newProduct.product_type);
+
+  });
+
+  it('create throw an exception for invalid product type', async () => {
+    const product: ProductEntity = {
+        id: "",
+        name: faker.lorem.sentence(),
+        price: faker.datatype.number({ min: 10, max: 100, precision: 0.01}),
+        product_type: faker.lorem.word()
+    };
+
+    await expect(
+        service.create(product)
+    ).rejects.toHaveProperty("message", "The product type is invalid")
+
   });
 
 });

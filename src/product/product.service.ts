@@ -19,9 +19,23 @@ export class ProductService {
     async findOne(id: string): Promise<ProductEntity> {
         const product: ProductEntity = await this.productRepository.findOne({where: {id} } );
         if (!product)
-          throw new BusinessLogicException("El producto con el ID dado no fue encontrado", BusinessError.NOT_FOUND);
+          throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND);
     
         return product;
     }
 
+    async create(product: ProductEntity){
+        const isProductTypeValid = Object.values<string>(ProducType).includes(product.product_type);
+        if (!isProductTypeValid) {
+            throw new BusinessLogicException("The product type is invalid", BusinessError.PRECONDITION_FAILED);
+        }
+
+        return await this.productRepository.save(product);
+    }  
+
+}
+
+enum ProducType {
+    PERECEDERO = "Perecedero",
+    NO_PERECEDERO = "No perecedero"
 }
