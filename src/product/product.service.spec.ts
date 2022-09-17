@@ -40,4 +40,26 @@ describe('ProductService', () => {
     expect(service).toBeDefined();
   });
 
+  it('findAll deberia retornar todos los productos', async () => {
+    const products: ProductEntity[] = await service.findAll();
+    expect(products).not.toBeNull();
+    expect(products).toHaveLength(lsProduct.length);
+  });
+
+  it('findOne deberia retornar un product', async () => {
+    const productStored: ProductEntity = lsProduct[0];
+    const product: ProductEntity = await service.findOne(productStored.id);
+    expect(product).not.toBeNull();
+    expect(product.id).toEqual(productStored.id);
+    expect(product.name).toEqual(productStored.name);
+    expect(product.price).toEqual(productStored.price);
+    expect(product.product_type).toEqual(productStored.product_type);
+  });
+
+  it('findOne deberia arrojar una excepcion por un producto invalido', async () => {
+    await expect(
+        service.findOne("0")
+    ).rejects.toHaveProperty("message", "El producto con el ID dado no fue encontrado")
+  });
+
 });
