@@ -17,9 +17,9 @@ export class ProductService {
     }
 
     async findOne(id: string): Promise<ProductEntity> {
-        const product: ProductEntity = await this.productRepository.findOne({where: {id} } );
+        const product: ProductEntity = await this.productRepository.findOne( { where: {id} } );
         if (!product)
-          throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND);
+            throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND);
     
         return product;
     }
@@ -31,7 +31,30 @@ export class ProductService {
         }
 
         return await this.productRepository.save(product);
-    }  
+    }
+    
+    async update(id: string, product: ProductEntity) {
+
+        const productStored: ProductEntity = await this.productRepository.findOne( { where: { id } } );
+        if (!productStored)
+            throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND);
+
+        const isProductTypeValid = Object.values<string>(ProducType).includes(product.product_type);
+        if (!isProductTypeValid) {
+            throw new BusinessLogicException("The product type is invalid", BusinessError.PRECONDITION_FAILED);
+        }
+    
+        return await this.productRepository.save({...productStored, ...product});
+
+    }
+
+    async delete(id: string) {
+        const product: ProductEntity = await this.productRepository.findOne( { where: {id} } );
+        if (!product)
+            throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND);
+    
+        await this.productRepository.remove(product);
+    }   
 
 }
 

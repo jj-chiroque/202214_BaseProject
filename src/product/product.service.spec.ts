@@ -97,4 +97,50 @@ describe('ProductService', () => {
 
   });
 
+  it('update should modify a product', async () => {
+    const product: ProductEntity = lsProduct[0];
+    product.name = "New name";
+    product.price = 1.23;
+    product.product_type = (product.product_type == "Perecedero" ? "No perecedero" : "Perecedero");
+
+    const productUpdated: ProductEntity = await service.update(product.id, product);
+    expect(productUpdated).not.toBeNull();
+
+    const productStored: ProductEntity = await service.findOne(product.id);
+    expect(productStored).not.toBeNull();
+
+    expect(productStored.id).toEqual(product.id);
+    expect(productStored.name).toEqual(product.name);
+    expect(productStored.price).toEqual(product.price);
+    expect(productStored.product_type).toEqual(product.product_type);
+
+  });
+
+  it('update throw an exception for invalid product', async () => {
+    const product: ProductEntity = lsProduct[0];
+    product.name = "New name";
+    product.price = 1.23;
+    product.product_type = (product.product_type == "Perecedero" ? "No perecedero" : "Perecedero");
+
+    await expect(
+        service.update("0", product)
+    ).rejects.toHaveProperty("message", "The product with the given id was not found")
+  });
+
+  it('delete shouod remove a product', async () => {
+    const product: ProductEntity = lsProduct[0];
+    await service.delete(product.id);
+  
+    const restauranteBorrado: ProductEntity = await repository.findOne({ where: { id: product.id } })
+    expect(restauranteBorrado).toBeNull();
+  });
+
+  it('delete throw an exception for invalid product', async () => {
+    await expect(
+        service.delete("0")
+    ).rejects.toHaveProperty("message", "The product with the given id was not found")
+
+
+  });
+
 });
