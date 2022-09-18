@@ -25,9 +25,8 @@ export class StoreService {
     }
 
     async create(store: StoreEntity){
-        const isCityValid = store.city.length == 3;
-        if (!isCityValid) {
-            throw new BusinessLogicException("The city is invalid", BusinessError.PRECONDITION_FAILED);
+        if (!store.city || store.city.length != 3) {
+            throw new BusinessLogicException("The city is invalid", BusinessError.BAD_REQUEST);
         }
 
         return await this.storeRepository.save(store);
@@ -38,11 +37,10 @@ export class StoreService {
         if (!storeStored)
             throw new BusinessLogicException("The store with the given id was not found", BusinessError.NOT_FOUND);
 
-        const isCityValid = store.city.length == 3;
-        if (!isCityValid) {
-            throw new BusinessLogicException("The city is invalid", BusinessError.PRECONDITION_FAILED);
+        if (!store.city || store.city.length != 3) {
+            throw new BusinessLogicException("The city is invalid", BusinessError.BAD_REQUEST);
         }
-    
+
         return await this.storeRepository.save({...storeStored, ...store});
     }
 
