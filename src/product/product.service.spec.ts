@@ -131,16 +131,15 @@ describe('ProductService', () => {
     const product: ProductEntity = lsProduct[0];
     await service.delete(product.id);
   
-    const restauranteBorrado: ProductEntity = await repository.findOne({ where: { id: product.id } })
-    expect(restauranteBorrado).toBeNull();
+    const productDeleted: ProductEntity = await repository.findOne({ where: { id: product.id } })
+    expect(productDeleted).toBeNull();
   });
 
   it('delete throw an exception for invalid product', async () => {
     await expect(
         service.delete("0")
     ).rejects.toHaveProperty("message", "The product with the given id was not found")
-
-
+    
   });
 
 });
