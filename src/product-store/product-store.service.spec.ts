@@ -112,4 +112,23 @@ describe('ProductStoreService', () => {
     ).rejects.toHaveProperty("message", "The product with the given id was not found")
   });
 
+
+  it('updateStoresFromProduct should update stores list for a museum', async () => {
+    const newStores: StoreEntity[] = [lsStores[0],lsStores[2]];
+
+    const productUpdated: ProductEntity = await service.updateStoresFromProduct(product.id, newStores);
+    expect(productUpdated.stores).not.toBeNull()
+    expect(productUpdated.stores).toHaveLength(newStores.length);  
+  });
+
+  it('updateStoresFromProduct should throw an exception for an invalid store', async () => {
+    const newStore: StoreEntity = lsStores[0];
+    newStore.id = "0";
+
+    await expect(
+        service.findStoreFromProduct("0", lsStores[0].id)
+    ).rejects.toHaveProperty("message", "The store with the given id was not found")
+  });
+
+
 });

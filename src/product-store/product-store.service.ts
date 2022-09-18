@@ -30,7 +30,7 @@ export class ProductStoreService {
     }
 
     async findStoresFromProduct(productId: string): Promise<StoreEntity[]> {
-        const product: ProductEntity = await this.productRepository.findOne({ where: { id: productId }, relations: ["stores"] });
+        const product: ProductEntity = await this.productRepository.findOne({where: { id: productId }, relations: ["stores"]});
         if (!product)
             throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND)
 
@@ -53,5 +53,21 @@ export class ProductStoreService {
 
         return productStore;
     }
+
+    async updateStoresFromProduct(productId: string, stores: StoreEntity[]): Promise<ProductEntity> {
+        const product: ProductEntity = await this.productRepository.findOne({where: { id: productId }, relations: ["stores"]});
+    
+        if (!product)
+          throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND)
+    
+        for (let i = 0; i < stores.length; i++) {
+          const store: StoreEntity = await this.storeRepository.findOne({where: { id: stores[i].id }});
+          if (!store)
+            throw new BusinessLogicException("The store with the given id was not found", BusinessError.NOT_FOUND)
+        }
+    
+        product.stores = stores;
+        return await this.productRepository.save(product);
+      }
     
 }
