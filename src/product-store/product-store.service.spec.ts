@@ -37,7 +37,7 @@ describe('ProductStoreService', () => {
             name: faker.lorem.sentence(),
             city: faker.lorem.word(3).toUpperCase(),
             address: faker.lorem.sentence()
-        })
+        });
         lsStores.push(store);
     }
 
@@ -126,9 +126,31 @@ describe('ProductStoreService', () => {
     newStore.id = "0";
 
     await expect(
-        service.findStoreFromProduct("0", lsStores[0].id)
+        service.updateStoresFromProduct(product.id, [newStore])
     ).rejects.toHaveProperty("message", "The store with the given id was not found")
   });
 
+  it('deleteStoreFromProduct should remove a store from a product', async () => {    
+    const store: StoreEntity = lsStores[0];
+
+    await service.deleteStoreFromProduct(product.id, store.id);
+
+    const productStored: ProductEntity = await productRepository.findOne({where: { id: product.id }, relations: ["stores"]});
+    const storeDeleted: StoreEntity = productStored.stores.find(a => a.id === store.id);
+
+    expect(storeDeleted).toBeUndefined();
+  });
+
+  it('deleteStoreFromProduct should thrown an exception for a non asocciated store', async () => {    
+    const newStore: StoreEntity = await storeRepository.save({
+        name: faker.lorem.sentence(),
+        city: faker.lorem.word(3).toUpperCase(),
+        address: faker.lorem.sentence()
+    })
+
+    await expect(
+        service.deleteStoreFromProduct(product.id, newStore.id)
+    ).rejects.toHaveProperty("message", "The store with the given id is not associated to the product")
+  });
 
 });

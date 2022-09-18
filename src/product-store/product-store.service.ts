@@ -68,6 +68,24 @@ export class ProductStoreService {
     
         product.stores = stores;
         return await this.productRepository.save(product);
-      }
-    
+    }
+
+    async deleteStoreFromProduct(productId: string, storeId: string) {
+        const store: StoreEntity = await this.storeRepository.findOne({ where: { id: storeId } });
+        if (!store)
+          throw new BusinessLogicException("The store with the given id was not found", BusinessError.NOT_FOUND);
+       
+        const product: ProductEntity = await this.productRepository.findOne({where: { id: productId}, relations: ["stores"]}) 
+        if (!product)
+          throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND);
+
+        const productStore: StoreEntity = product.stores.find(e => e.id === storeId);
+
+        if (!productStore)
+            throw new BusinessLogicException("The store with the given id is not associated to the product", BusinessError.PRECONDITION_FAILED)
+
+        product.stores = product.stores.filter(e => e.id !== storeId);
+        await this.productRepository.save(product);
+    }
+       
 }
