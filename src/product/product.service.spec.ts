@@ -67,7 +67,8 @@ describe('ProductService', () => {
         id: "",
         name: faker.lorem.sentence(),
         price: faker.datatype.number({ min: 10, max: 100, precision: 0.01}),
-        product_type: faker.helpers.arrayElement(['Perecedero', 'No perecedero'])
+        product_type: faker.helpers.arrayElement(['Perecedero', 'No perecedero']),
+        stores: []
     };
 
     const newProduct: ProductEntity = await service.create(product);
@@ -88,7 +89,8 @@ describe('ProductService', () => {
         id: "",
         name: faker.lorem.sentence(),
         price: faker.datatype.number({ min: 10, max: 100, precision: 0.01}),
-        product_type: faker.lorem.word()
+        product_type: faker.lorem.word(),
+        stores: []
     };
 
     await expect(

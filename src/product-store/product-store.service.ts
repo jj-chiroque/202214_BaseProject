@@ -16,7 +16,7 @@ export class ProductStoreService {
         private readonly storeRepository: Repository<StoreEntity>
     ) {}
 
-    async addStoreToProduct(storeId: string, productId: string): Promise<ProductEntity> {
+    async addStoreToProduct(productId: string, storeId: string): Promise<ProductEntity> {
         const store: StoreEntity = await this.storeRepository.findOne({ where: { id: storeId } });
         if (!store)
           throw new BusinessLogicException("The store with the given id was not found", BusinessError.NOT_FOUND);
@@ -27,6 +27,31 @@ export class ProductStoreService {
      
         product.stores = [...product.stores, store];
         return await this.productRepository.save(product);
+    }
+
+    async findStoresFromProduct(productId: string): Promise<StoreEntity[]> {
+        const product: ProductEntity = await this.productRepository.findOne({ where: { id: productId }, relations: ["stores"] });
+        if (!product)
+            throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND)
+
+        return product.stores;
+    }
+
+    async findStoreFromProduct(productId: string, storeId: string): Promise<StoreEntity> {
+        const store: StoreEntity = await this.storeRepository.findOne({ where: { id: storeId } });
+        if (!store)
+          throw new BusinessLogicException("The store with the given id was not found", BusinessError.NOT_FOUND);
+       
+        const product: ProductEntity = await this.productRepository.findOne({where: { id: productId}, relations: ["stores"]}) 
+        if (!product)
+          throw new BusinessLogicException("The product with the given id was not found", BusinessError.NOT_FOUND);
+
+        const productStore: StoreEntity = product.stores.find(e => e.id === storeId);
+
+        if (!productStore)
+            throw new BusinessLogicException("The store with the given id is not associated to the product", BusinessError.PRECONDITION_FAILED)
+
+        return productStore;
     }
     
 }
