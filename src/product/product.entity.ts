@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { StoreEntity } from "../store/store.entity";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class ProductEntity {
@@ -14,5 +15,9 @@ export class ProductEntity {
     
     @Column()
     product_type: string;
+
+    @ManyToMany(() => StoreEntity, (store) => store.products)
+    @JoinTable()
+    stores: StoreEntity[];
     
 }

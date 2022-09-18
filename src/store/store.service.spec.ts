@@ -67,7 +67,8 @@ describe('StoreService', () => {
         id: "",
         name: faker.lorem.sentence(),
         city: faker.lorem.word(3).toUpperCase(),
-        address: faker.lorem.sentence()
+        address: faker.lorem.sentence(),
+        products: []
     };
 
     const newStore: StoreEntity = await service.create(store);
@@ -87,7 +88,8 @@ describe('StoreService', () => {
         id: "",
         name: faker.lorem.sentence(),
         city: faker.lorem.word(10).toUpperCase(),
-        address: faker.lorem.sentence()
+        address: faker.lorem.sentence(),
+        products: []
     };
 
     await expect(
