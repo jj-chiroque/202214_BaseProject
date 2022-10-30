@@ -33,15 +33,6 @@ export class ProductService {
         return await this.productRepository.save(product);
     }
     
-    async bkp_create(product: ProductEntity){
-        const isProductTypeValid = Object.values<string>(ProducType).includes(product.product_type);
-        if (!isProductTypeValid) {
-            throw new BusinessLogicException("The product type is invalid", BusinessError.PRECONDITION_FAILED);
-        }
-
-        return await this.productRepository.save(product);
-    }
-    
     async update(id: string, product: ProductEntity) {
 
         const productStored: ProductEntity = await this.productRepository.findOne( { where: { id } } );
